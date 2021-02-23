@@ -1,22 +1,26 @@
 package Entity;
 
 import TileMap.*;
+import Audio.AudioPlayer;
+import Main.GamePanel;
 
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
-
-import Game.TileMap;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
 public class Player extends MapObject {
+
+	private int checkPointX = 100;
+	private int checkPointY = 100;
 	
 	// player stuff
 	private int health;
 	private int maxHealth;
-	private int fire;
-	private int maxFire;
+	private double fire;
+	private double maxFire;
+	private int glidingCost;
 	private boolean dead;
 	private boolean flinching;
 	private long flinchTimer;
@@ -25,7 +29,7 @@ public class Player extends MapObject {
 	private boolean firing;
 	private int fireCost;
 	private int fireBallDamage;
-	//private ArrayList<FireBall> fireBalls;
+	private ArrayList<FireBall> fireBalls;
 	
 	// scratch
 	private boolean scratching;
@@ -38,7 +42,7 @@ public class Player extends MapObject {
 	// animations
 	private ArrayList<BufferedImage[]> sprites;
 	private final int[] numFrames = {
-		2, 8, 1, 2, 4, 2, 5
+		2, 6, 1, 2, 4, 2, 5
 	};
 	
 	// animation actions
@@ -50,6 +54,8 @@ public class Player extends MapObject {
 	private static final int FIREBALL = 5;
 	private static final int SCRATCHING = 6;
 	
+	private HashMap<String, AudioPlayer> sfx;
+	
 	public Player(TileMap tm) {
 		
 		super(tm);
@@ -59,24 +65,25 @@ public class Player extends MapObject {
 		cwidth = 20;
 		cheight = 20;
 		
-		moveSpeed = 1.5;
-		maxSpeed = 8;
-		stopSpeed = 0.8;
-		fallSpeed = 0.5;
+		moveSpeed = 0.3;
+		maxSpeed = 1.6;
+		stopSpeed = 0.4;
+		fallSpeed = 0.15;
 		maxFallSpeed = 4.0;
-		jumpStart = -8.8;
+		jumpStart = -4.8;
 		stopJumpSpeed = 0.3;
 		
 		facingRight = true;
 		
-		maxHealth = maxHealth = 1000;
-		fire = maxFire = 2500;
+		health = maxHealth = 1000;
+		fire = maxFire = 500;
 		
-		fireCost = 200;
-		fireBallDamage = 5;
-		//fireBalls = new ArrayList<FireBall>();
+		fireCost = 50;
+		glidingCost = 5;
+		fireBallDamage = 10;
+		fireBalls = new ArrayList<FireBall>();
 		
-		scratchDamage = 8;
+		scratchDamage = 7;
 		scratchRange = 40;
 		
 		// load sprites
@@ -84,7 +91,7 @@ public class Player extends MapObject {
 			
 			BufferedImage spritesheet = ImageIO.read(
 				getClass().getResourceAsStream(
-					"/Sprites/Player/playersprites.png"
+					"/Sprites/Player/player.png"
 				)
 			);
 			
@@ -96,7 +103,7 @@ public class Player extends MapObject {
 				
 				for(int j = 0; j < numFrames[i]; j++) {
 					
-					if(i != 6) {
+					if(i != SCRATCHING) {
 						bi[j] = spritesheet.getSubimage(
 								j * width,
 								i * height,
@@ -108,7 +115,7 @@ public class Player extends MapObject {
 						bi[j] = spritesheet.getSubimage(
 								j * width * 2,
 								i * height,
-								width,
+								width * 2,
 								height
 						);
 					}
@@ -129,26 +136,95 @@ public class Player extends MapObject {
 		animation.setFrames(sprites.get(IDLE));
 		animation.setDelay(400);
 		
+		sfx = new HashMap<String, AudioPlayer>();
+		sfx.put("jump", new AudioPlayer("/SFX/jump.mp3"));
+		sfx.put("scratch", new AudioPlayer("/SFX/scratch.mp3"));
+		
 	}
 	
 	public int getHealth() { return health; }
 	public int getMaxHealth() { return maxHealth; }
-	public int getFire() { return fire; }
-	public int getMaxFire() { return maxFire; }
+	public int getFire() { return (int) fire; }
+	public int getMaxFire() { return (int) maxFire; }
 	
 	public void setFiring() { 
+		if(fire < fireCost)
+			return;
 		firing = true;
 	}
 	public void setScratching() {
 		scratching = true;
 	}
-	public void setGliding(boolean b) { 
+	public void setGliding(boolean b) {
+		if(b && fire < glidingCost * 2.5)
+			return;
 		gliding = b;
+	}
+	
+	public void checkAttack(ArrayList<Enemy> enemies) {
+		
+		// loop through enemies
+		for(int i = 0; i < enemies.size(); i++) {
+			
+			Enemy e = enemies.get(i);
+			
+			// scratch attack
+			if(scratching) {
+				if(facingRight) {
+					if(
+						e.getx() > x &&
+						e.getx() < x + scratchRange && 
+						e.gety() > y - height / 2 &&
+						e.gety() < y + height / 2
+					) {
+						e.hit(scratchDamage);
+					}
+				}
+				else {
+					if(
+						e.getx() < x &&
+						e.getx() > x - scratchRange &&
+						e.gety() > y - height / 2 &&
+						e.gety() < y + height / 2
+					) {
+						e.hit(scratchDamage);
+					}
+				}
+			}
+			
+			// fireballs
+			for(int j = 0; j < fireBalls.size(); j++) {
+				if(fireBalls.get(j).intersects(e)) {
+					e.hit(fireBallDamage);
+					fireBalls.get(j).setHit();
+					break;
+				}
+			}
+			
+			// check enemy collision
+			if(intersects(e)) {
+				hit(e.getDamage());
+			}
+			
+		}
+		
+	}
+	
+	public void hit(int damage) {
+		if(damage > 0) {
+			if(flinching) return;
+			health -= damage;
+			if(health < 0) health = 0;
+			if(health == 0) dead = true;
+			flinching = true;
+			flinchTimer = System.nanoTime();
+		}
 	}
 	
 	private void getNextPosition() {
 		
 		// movement
+		
 		if(left) {
 			dx -= moveSpeed;
 			if(dx < -maxSpeed) {
@@ -185,35 +261,86 @@ public class Player extends MapObject {
 		
 		// jumping
 		if(jumping && !falling) {
+			sfx.get("jump").play(0);
 			dy = jumpStart;
-			falling = true;	
+			falling = true;
 		}
 		
 		// falling
 		if(falling) {
-			
-			if(dy > 0 && gliding) dy += fallSpeed * 0.1;
+			if(fire < glidingCost)
+				gliding = false;
+			if(dy > 0 && gliding && !(fire < glidingCost)) {
+				dy += fallSpeed * 0.1;
+				fire = fire - glidingCost;
+			}
 			else dy += fallSpeed;
 			
 			if(dy > 0) jumping = false;
 			if(dy < 0 && !jumping) dy += stopJumpSpeed;
 			
 			if(dy > maxFallSpeed) dy = maxFallSpeed;
-			
+
 		}
 		
+		if(y+height > tileMap.getHeight()) {
+			x = checkPointX;
+			y = checkPointY;
+		}
+		
+		staticX = x;
+		staticY = y;
 	}
 	
-	public void update() {
+	public boolean update() {
 		
 		// update position
 		getNextPosition();
 		checkTileMapCollision();
 		setPosition(xtemp, ytemp);
 		
+		// check attack has stopped
+		if(currentAction == SCRATCHING) {
+			if(animation.hasPlayedOnce()) scratching = false;
+		}
+		if(currentAction == FIREBALL) {
+			if(animation.hasPlayedOnce()) firing = false;
+		}
+		
+		// fireball attack
+		fire += 0.5;
+		if(fire > maxFire) fire = maxFire;
+		if(firing && currentAction != FIREBALL) {
+			if(fire > fireCost) {
+				fire -= fireCost;
+				FireBall fb = new FireBall(tileMap, facingRight);
+				fb.setPosition(x, y);
+				fireBalls.add(fb);
+			}
+		}
+		
+		// update fireballs
+		for(int i = 0; i < fireBalls.size(); i++) {
+			fireBalls.get(i).update();
+			if(fireBalls.get(i).shouldRemove()) {
+				fireBalls.remove(i);
+				i--;
+			}
+		}
+		
+		// check done flinching
+		if(flinching) {
+			long elapsed =
+				(System.nanoTime() - flinchTimer) / 1000000;
+			if(elapsed > 1000) {
+				flinching = false;
+			}
+		}
+		
 		// set animation
 		if(scratching) {
 			if(currentAction != SCRATCHING) {
+				sfx.get("scratch").play(0);
 				currentAction = SCRATCHING;
 				animation.setFrames(sprites.get(SCRATCHING));
 				animation.setDelay(50);
@@ -256,7 +383,7 @@ public class Player extends MapObject {
 			if(currentAction != WALKING) {
 				currentAction = WALKING;
 				animation.setFrames(sprites.get(WALKING));
-				animation.setDelay(1);
+				animation.setDelay(80);
 				width = 30;
 			}
 		}
@@ -277,11 +404,17 @@ public class Player extends MapObject {
 			if(left) facingRight = false;
 		}
 		
+		return tochFinish;
 	}
 	
 	public void draw(Graphics2D g) {
 		
 		setMapPosition();
+		
+		// draw fireballs
+		for(int i = 0; i < fireBalls.size(); i++) {
+			fireBalls.get(i).draw(g);
+		}
 		
 		// draw player
 		if(flinching) {
@@ -292,28 +425,12 @@ public class Player extends MapObject {
 			}
 		}
 		
-		if(facingRight) {
-			g.drawImage(
-				animation.getImage(),
-				(int)(x + xmap - width / 2),
-				(int)(y + ymap - height / 2),
-				null
-			);
-		}
-		else {
-			g.drawImage(
-				animation.getImage(),
-				(int)(x + xmap - width / 2 + width),
-				(int)(y + ymap - height / 2),
-				-width,
-				height,
-				null
-			);
-			
-		}
+		super.draw(g);
 		
 	}
-	
+
+	public static double staticX;
+	public static double staticY;
 }
 
 

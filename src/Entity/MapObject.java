@@ -1,19 +1,21 @@
 package Entity;
 
+import Main.GamePanel;
+import TileMap.TileMap;
 import TileMap.Tile;
 
+import java.awt.Color;
 import java.awt.Rectangle;
-
-import Game.TileMap;
-import Main.GameJPanel;
 
 public abstract class MapObject {
 	
 	// tile stuff
 	protected TileMap tileMap;
-	protected int tileSize;
+	protected int tileSize = 30;
 	protected double xmap;
 	protected double ymap;
+	protected int hp;
+	protected int maxHP;
 	
 	// position and vector
 	protected double x;
@@ -66,6 +68,8 @@ public abstract class MapObject {
 	
 	// constructor
 	public MapObject(TileMap tm) {
+		if(tm == null)
+			return;
 		tileMap = tm;
 		tileSize = tm.getTileSize(); 
 	}
@@ -101,8 +105,11 @@ public abstract class MapObject {
 		topRight = tr == Tile.BLOCKED;
 		bottomLeft = bl == Tile.BLOCKED;
 		bottomRight = br == Tile.BLOCKED;
-		
+		tochFinish = tl == Tile.FINISH || tr == Tile.FINISH ||
+				bl ==  Tile.FINISH || br == Tile.FINISH;
 	}
+	
+	public boolean tochFinish = false;
 	
 	public void checkTileMapCollision() {
 		
@@ -182,8 +189,8 @@ public abstract class MapObject {
 	}
 	
 	public void setMapPosition() {
-		xmap = tileMap.getX();
-		ymap = tileMap.getY();
+		xmap = tileMap.getx();
+		ymap = tileMap.gety();
 	}
 	
 	public void setLeft(boolean b) { left = b; }
@@ -194,11 +201,55 @@ public abstract class MapObject {
 	
 	public boolean notOnScreen() {
 		return x + xmap + width < 0 ||
-			x + xmap - width > GameJPanel.WIDTH ||
+			x + xmap - width > GamePanel.WIDTH ||
 			y + ymap + height < 0 ||
-			y + ymap - height > GameJPanel.HEIGHT;
+			y + ymap - height > GamePanel.HEIGHT;
 	}
 	
+	public void draw(java.awt.Graphics2D g) {
+		if(facingRight) {
+			g.drawImage(
+				animation.getImage(),
+				(int)(x + xmap - width / 2),
+				(int)(y + ymap - height / 2) - 4,
+				null
+			);
+		} else {
+			g.drawImage(
+				animation.getImage(),
+				(int)(x + xmap - width / 2 + width),
+				(int)(y + ymap - height / 2) - 4,
+				-width,
+				height,
+				null
+			);
+		}
+		
+		if(hp < maxHP) {
+//			System.out.println("Class: " + getClass() + " " + hp + "/" + maxHP);
+			g.setColor(Color.GRAY);
+			g.fillRect(
+					(int)(x + xmap - (tileSize - 5) / 2 ),
+					(int)(y + ymap - height / 2) - 8,
+					tileSize - 5,
+					5
+			);
+			g.setColor(new Color(255,50,50));
+			g.fillRect(
+					(int)(x + xmap - (tileSize - 5) / 2 ),
+					(int)(y + ymap - height / 2) - 8,
+					hp*(tileSize - 5) / maxHP,
+					5
+			);
+			g.setColor(Color.DARK_GRAY);
+			g.drawRect(
+					(int)(x + xmap - (tileSize - 5) / 2 ),
+					(int)(y + ymap - height / 2) - 8,
+					tileSize - 5,
+					5
+			);
+		}
+	}
 }
 
 
