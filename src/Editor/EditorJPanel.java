@@ -13,13 +13,17 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 import Entity.Enemy;
 import Entity.Enemies.Goblin;
+import Main.GamePanel;
 import TileMap.Tile;
 import TileMap.TileMap;
 
@@ -177,11 +181,53 @@ public class EditorJPanel extends JPanel {
 				case KeyEvent.VK_D:
 					ctrl = true;
 					break;
+				case KeyEvent.VK_F2:
+					
+					JFileChooser fc = new JFileChooser(new File(System.getProperty("user.dir")));
+					if(fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
+						loadYouMap(fc.getSelectedFile() + "");
+					}
+					break;
 				default:
 					break;
 				}
 			}
-
+			
+			public void loadYouMap(String youLevelURL) {
+				String data;
+				try {
+					data = new String(Files.readAllBytes(Paths.get(youLevelURL)));
+				} catch (IOException e1) {
+					System.exit(0);
+					return;
+				}
+				String formatedData = data.replaceAll(" ", "").replaceAll("\n", "").replaceAll("\r", "")
+						.replaceAll("\\n", "\n").replaceAll("\\s", " ");
+				System.err.println(formatedData);
+				String dataArr[] = getStringArr(formatedData, "size");
+				height = Integer.parseInt(dataArr[0]);
+				width = Integer.parseInt(dataArr[1]);
+				System.out.println("[DEBUG] {map_size: " + width + "x" + height + "}");
+				map = new int[height][width];
+				dataArr = getStringArr(formatedData, "map");
+				for(int row = 0; row < width; row++) {
+					for(int col = 0; col < height; col++) {
+						try {
+							map[col][row] =
+									Integer.parseInt(dataArr[col + row*height]);
+						} catch (Exception e) {
+						}
+					}
+				}
+		}
+			
+			public String getString(String data, String name) throws StringIndexOutOfBoundsException {
+				return data.substring(data.indexOf("<" + name + ">") + name.length()+2, data.indexOf("</" + name + ">"));
+			}
+			public String[] getStringArr(String data, String name) throws StringIndexOutOfBoundsException{
+				return getString(data, name).split(",");
+			}
+			
 			private void export() {
 				String mapdata = "<size>" + height + "," + width + "</size><map>";
 				for (int x = 0; x < width; x++) {

@@ -21,7 +21,7 @@ public class GamePanel extends JPanel
 	public static int HEIGHT;
 	
 	private static int calScale() {
-		int s = (int) Math.ceil((320* 8 / d.height) );
+		int s = (int) Math.ceil(Math.ceil(d.height/8)/30);
 		WIDTH = d.width/s;
 		HEIGHT = d.height/s;
 		return s;
@@ -130,19 +130,3 @@ public class GamePanel extends JPanel
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

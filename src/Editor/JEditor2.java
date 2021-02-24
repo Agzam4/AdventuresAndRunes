@@ -22,6 +22,8 @@ import Entity.Enemy;
 import Entity.Enemies.Goblin;
 
 import javax.swing.JScrollPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 public class JEditor2 extends JFrame {
 
@@ -49,6 +51,13 @@ public class JEditor2 extends JFrame {
 	 * Create the frame.
 	 */
 	public JEditor2() {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e1) {
+			e1.printStackTrace();
+		}
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
