@@ -286,6 +286,7 @@ public class Player extends MapObject {
 		if(y+height > tileMap.getHeight()) {
 			x = checkPointX;
 			y = checkPointY;
+			health = health - maxHealth/2;
 		}
 		
 		staticX = x;

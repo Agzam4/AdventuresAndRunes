@@ -8,10 +8,11 @@ public class GameStateManager {
 	private GameState[] gameStates;
 	private int currentState;
 	
-	public static final int NUMGAMESTATES = 3;
+	public static final int NUMGAMESTATES = 6;
 	public static final int MENUSTATE = 0;
-	public static final int CREDITS = 2;
 	public static final int LEVEL1STATE = 1;
+	public static final int CREDITS = 2;
+	public static final int SCORESTATE = 4;
 	
 	public GameStateManager() {
 		
@@ -32,6 +33,12 @@ public class GameStateManager {
 	
 	private void unloadState(int state) {
 		gameStates[state] = null;
+	}
+
+	public void setScoreState(long time, int enemy, int hp, String data) {
+		unloadState(currentState);
+		currentState = SCORESTATE;
+		gameStates[SCORESTATE] = new ScoreState(this, time/60, enemy, hp, data);
 	}
 	
 	public void setState(int state) {

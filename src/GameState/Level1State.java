@@ -18,12 +18,14 @@ public class Level1State extends GameState {
 	
 	public int level = Integer.parseInt(UserData.getData("level"));
 	
+	public long startingTime = 0;
+	
 	private TileMap tileMap;
 	private Background bg;
 	
 	private boolean isPaused = false;
 	
-	private Player player;
+	public Player player;
 	
 	private ArrayList<Enemy> enemies;
 	private ArrayList<Explosion> explosions;
@@ -34,6 +36,7 @@ public class Level1State extends GameState {
 	
 	public Level1State(GameStateManager gsm) {
 		MenuState.audioPlayer.close();
+		startingTime = 0;
 		this.gsm = gsm;
 		init();
 	}
@@ -88,6 +91,9 @@ public class Level1State extends GameState {
 					case "goblin":
 						s = new Goblin(tileMap);
 						break;
+					case "goblin_archer":
+						s = new GoblinArcher(tileMap, player);
+						break;
 					default:
 						s = new Enemy(tileMap);
 						break;
@@ -126,6 +132,7 @@ public class Level1State extends GameState {
 		}else {
 			// update player
 			nextLevel = player.update();
+			
 			tileMap.setPosition(
 				GamePanel.WIDTH / 2 - player.getx(),
 				GamePanel.HEIGHT / 2 - player.gety()
@@ -158,14 +165,19 @@ public class Level1State extends GameState {
 				}
 			}
 			
-			System.out.println(nextLevel);
-			if(nextLevel) {
-				if(!loadYouLevel) {
-					UserData.writeData("level", (level+1) + "");
-				}
+			if(player.getHealth() < 1) { // TODO
 				bgMusic.close();
 				gsm.setState(GameStateManager.LEVEL1STATE);
 			}
+			
+			if(nextLevel) {
+//				if(!loadYouLevel) {
+//					UserData.writeData("level", (level+1) + "");
+//				}
+				bgMusic.close();
+				gsm.setScoreState(startingTime, enemies.size(), player.getHealth(), tileMap.formData);//TODO
+			}
+			startingTime++;
 		}
 	}
 	
@@ -194,6 +206,9 @@ public class Level1State extends GameState {
 		
 		// draw hud
 		hud.draw(g);
+		long timelost = (startingTime)/6;
+		String timing = timelost/10 + "." +  timelost%10;
+			g.drawString(timing, GamePanel.WIDTH - g.getFontMetrics().stringWidth(timing) - 5, 15);
 		
 		if(isPaused) {
 			g.setColor(new Color(0,0,0,50));

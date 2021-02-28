@@ -32,7 +32,6 @@ public class UserData {
 	}
 	
 	public static void setData(String id, String value) {
-		System.out.println(MAIN_DATA);
 		MAIN_DATA = 
 				MAIN_DATA.substring(0,MAIN_DATA.indexOf("<" + id + ">")+id.length()+2) 
 				+ value + 

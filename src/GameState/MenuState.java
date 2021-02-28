@@ -153,7 +153,6 @@ public class MenuState extends GameState {
 		if(code.length() > 10) {
 			code = code.substring(code.length()-10, code.length());
 		}
-		System.out.println(code);
 		if(code.equals("/LEVELLOAD") || code.equals("/LOADLEVEL")) {
 			options = new String[] {
 					"Start",

@@ -108,8 +108,9 @@ public abstract class MapObject {
 		tochFinish = tl == Tile.FINISH || tr == Tile.FINISH ||
 				bl ==  Tile.FINISH || br == Tile.FINISH;
 	}
-	
+
 	public boolean tochFinish = false;
+	public boolean isWall = false;
 	
 	public void checkTileMapCollision() {
 		
@@ -122,11 +123,14 @@ public abstract class MapObject {
 		xtemp = x;
 		ytemp = y;
 		
+		isWall = false;
+		
 		calculateCorners(x, ydest);
 		if(dy < 0) {
 			if(topLeft || topRight) {
 				dy = 0;
 				ytemp = currRow * tileSize + cheight / 2;
+				isWall = true;
 			}
 			else {
 				ytemp += dy;
@@ -137,6 +141,7 @@ public abstract class MapObject {
 				dy = 0;
 				falling = false;
 				ytemp = (currRow + 1) * tileSize - cheight / 2;
+				isWall = true;
 			}
 			else {
 				ytemp += dy;
@@ -148,6 +153,7 @@ public abstract class MapObject {
 			if(topLeft || bottomLeft) {
 				dx = 0;
 				xtemp = currCol * tileSize + cwidth / 2;
+				isWall = true;
 			}
 			else {
 				xtemp += dx;
@@ -157,6 +163,7 @@ public abstract class MapObject {
 			if(topRight || bottomRight) {
 				dx = 0;
 				xtemp = (currCol + 1) * tileSize - cwidth / 2;
+				isWall = true;
 			}
 			else {
 				xtemp += dx;

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -15,7 +16,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
@@ -95,6 +98,7 @@ public class EditorJPanel extends JPanel {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				System.out.println(selected);
 				requestFocus();
 				if(selected < 0)
 					addEnemy(e.getX(), e.getY());
@@ -219,6 +223,26 @@ public class EditorJPanel extends JPanel {
 						}
 					}
 				}
+				
+				// Load enemis
+
+				String pos[] = tileMap.getStringArr(tileMap.formData, "enemys_pos");
+				String types[] = tileMap.getStringArr(tileMap.formData, "enemys_type");
+				
+				enemies.clear();
+				try {
+					Point[] points = new Point[pos.length];
+					for (int i = 0; i < points.length; i++) {
+						String[] pos2 = pos[i].split(":");
+						points[i] = new Point(Integer.parseInt(pos2[0]), Integer.parseInt(pos2[1]));
+					}
+					
+					for(int i = 0; i < points.length; i++) {
+						enemies.add(new EnemyImgs(getEnemyImage(types[i]), points[i].x, points[i].y, types[i]));
+					}
+				} catch (NumberFormatException | IOException | ArrayIndexOutOfBoundsException e) {
+					e.printStackTrace();
+				}
 		}
 			
 			public String getString(String data, String name) throws StringIndexOutOfBoundsException {
@@ -259,7 +283,8 @@ public class EditorJPanel extends JPanel {
 				mapdata +="</enemys_drop_item>";
 				//<enemys_pos>100:100,100:100</enemys_pos><enemys_drop_item>null,null</enemys_drop_item>";
 				try {
-					FileWriter writer = new FileWriter(new File("level.map"));
+					String date = new SimpleDateFormat("yyyy.MM.dd_HH.m.ss").format(Calendar.getInstance().getTime());;
+					FileWriter writer = new FileWriter(new File("level_" + date + ".map"));
 					writer.write(mapdata);
 					writer.flush();
 					writer.close();
@@ -353,12 +378,13 @@ public class EditorJPanel extends JPanel {
 
 	ArrayList<EnemyImgs> enemies = new ArrayList<EnemyImgs>();
 
-	public static final String[] ENEMYS_NAMES = {"goblin","enemy"};
+	public static final String[] ENEMYS_NAMES = {"goblin","goblin_archer","enemy"};
 	public final BufferedImage[] ENEMYS_IMGS = getImgs();
 	public static final int GOBLIN = 0;
 	public static final int ENEMY = 1;
 	
 	private void addEnemy(int x, int y) {
+		System.out.println(-selected-1);
 		if(ctrl)
 			return;
 		EnemyImgs e = new EnemyImgs(ENEMYS_IMGS[-selected-1], x-15-scrollX, y-15-scrollY, ENEMYS_NAMES[-selected-1]);
