@@ -378,7 +378,7 @@ public class EditorJPanel extends JPanel {
 
 	ArrayList<EnemyImgs> enemies = new ArrayList<EnemyImgs>();
 
-	public static final String[] ENEMYS_NAMES = {"goblin","goblin_archer","enemy"};
+	public static final String[] ENEMYS_NAMES = {"goblin","goblin_archer","goblin_wizard","enemy"}; // TODO
 	public final BufferedImage[] ENEMYS_IMGS = getImgs();
 	public static final int GOBLIN = 0;
 	public static final int ENEMY = 1;

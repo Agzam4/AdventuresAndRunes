@@ -217,6 +217,10 @@ public class TileMap {
 	public int getWidth() { return width; }
 	public int getHeight() { return height; }
 	
+	public int getType2(int r, int c) {
+		return tiles[r][c].getType();
+	}
+	
 	public int getType(int row, int col) {
 		int rc = map[row][col];
 		int r = rc / numTilesAcross;

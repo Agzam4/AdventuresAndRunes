@@ -64,14 +64,18 @@ public class ScoreState extends GameState {
 	
 	private void addStar(String id, boolean star) {
 		if(star) stars++;
-		String data = UserData.getData(id);
-		while (data.length() < lvl) {
-			data += "0";
+		try {
+			String data = UserData.getData(id);
+			while (data.length() < lvl) {
+				data += "0";
+			}
+			data = data.substring(0,lvl+1);
+			char[] cs = data.toCharArray();
+			cs[lvl] = star ? '1':'0';
+			UserData.writeData(id,new String(cs));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		data = data.substring(0,lvl);
-		char[] cs = data.toCharArray();
-		cs[lvl] = star ? '1':'0';
-		UserData.writeData(id,new String(cs));
 	}
 	
 	private BufferedImage getImage(String s) {
@@ -124,6 +128,7 @@ public class ScoreState extends GameState {
 						h*3 - 5, Color.WHITE, Color.BLACK);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

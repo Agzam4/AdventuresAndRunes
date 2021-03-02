@@ -1,0 +1,18 @@
+> v1.0 added Game
+# v1.1 added "Goblin"
+# v1.2 new Map style(HTML-style)
+### v1.3 Credits 
+# v1.4 Menu Update
+### Update Sprites
+# 0 damge fix
+
+$ Start Block
+$ Finish Block
+$ Enemies in html-map
+$ Goblin-archer
+$ Goblin-wizard
+$ Finish Block
+$ new Level
+$ next Level
+
+20$

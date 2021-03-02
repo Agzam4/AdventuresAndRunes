@@ -15,6 +15,9 @@ import java.util.concurrent.Exchanger;
 public class Level1State extends GameState {
 	
 	public boolean nextLevel = false;
+
+	public static int screenDarknes = 0;
+	private  double screenDarknes2 = 0;
 	
 	public int level = Integer.parseInt(UserData.getData("level"));
 	
@@ -87,12 +90,15 @@ public class Level1State extends GameState {
 			
 			for(int i = 0; i < points.length; i++) {
 				try {
-					switch (types[i].toLowerCase()) {
+					switch (types[i].toLowerCase()) { // TODO
 					case "goblin":
 						s = new Goblin(tileMap);
 						break;
 					case "goblin_archer":
 						s = new GoblinArcher(tileMap, player);
+						break;
+					case "goblin_wizard":
+						s = new GoblinWizard(tileMap, player);
 						break;
 					default:
 						s = new Enemy(tileMap);
@@ -125,6 +131,7 @@ public class Level1State extends GameState {
 		g.drawString(str, x, y);
 	}
 	public void update() {
+		screenDarknes = 0;
 		if(isPaused) {
 			// set background
 			
@@ -185,6 +192,14 @@ public class Level1State extends GameState {
 		
 		// draw bg
 		bg.draw(g, true);
+		if(screenDarknes < 0)
+			screenDarknes = 0;
+		if(screenDarknes > 200)
+			screenDarknes = 200;
+		screenDarknes2 = (screenDarknes2 - screenDarknes)/1.1+ screenDarknes;
+		g.setColor(new Color(0,0,0,(int) screenDarknes2));
+		g.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
+		
 		
 		// draw tilemap
 		tileMap.draw(g);
