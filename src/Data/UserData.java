@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 
 public class UserData {
 
-	private static final Path DATA_PATH =  Paths.get(System.getProperty("user.dir") + "\\data\\data.png");
+	private static final Path DATA_PATH =  Paths.get(System.getProperty("user.dir") + "data.png");
 	private static final String DEFAULT_DATA = "‰PNG, <level>0</level><gold>0</gold>";
 	private static String MAIN_DATA = loadData(DEFAULT_DATA);
 	

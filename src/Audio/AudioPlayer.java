@@ -39,20 +39,29 @@ public class AudioPlayer {
 	}
 	
 	public void play(int loops) {
-		if(clip == null) return;
-		stop();
-		clip.setFramePosition(0);
-		clip.loop(loops);
-		clip.start();
+		try {
+			if(clip == null) return;
+			stop();
+			clip.setFramePosition(0);
+			clip.loop(loops);
+			clip.start();
+		} catch (Exception e) {
+		}
 	}
 	
 	public void stop() {
-		if(clip.isRunning()) clip.stop();
+		try {
+			if(clip.isRunning()) clip.stop();
+		} catch (Exception e) {
+		}
 	}
 	
 	public void close() {
+		try {
 		stop();
 		clip.close();
+		} catch (Exception e) {
+		}
 	}
 	
 }

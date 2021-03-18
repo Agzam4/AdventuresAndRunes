@@ -71,7 +71,7 @@ public class GoblinWizard extends Enemy{
 		cwidth = 15;
 		cheight = 20;
 
-		health = maxHealth = 100;
+		health = maxHealth = 50;
 		damage = 250;
 		
 		maxHP = maxHealth;

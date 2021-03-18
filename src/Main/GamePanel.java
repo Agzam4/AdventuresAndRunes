@@ -122,7 +122,13 @@ public class GamePanel extends JPanel
 	}
 	
 	public void keyTyped(KeyEvent key) {}
+	
+	public static String code = "";
 	public void keyPressed(KeyEvent key) {
+		code += Character.toUpperCase(key.getKeyChar());
+		if(code.length() > 10) {
+			code = code.substring(code.length()-10, code.length());
+		}
 		gsm.keyPressed(key);
 	}
 	public void keyReleased(KeyEvent key) {

@@ -19,6 +19,7 @@ public class MenuState extends GameState {
 	private int currentChoice = 0;
 	private String[] options = {
 		"Start",
+		"Load Level",
 		"Credits",
 		"Quit"
 	};
@@ -31,7 +32,7 @@ public class MenuState extends GameState {
 	
 	protected static AudioPlayer audioPlayer;
 	
-	private int light[] = {65,65,65};
+	private int light[] = {65,65,65,65};
 	
 	public static boolean isMusicPlay = false;
 	
@@ -124,14 +125,14 @@ public class MenuState extends GameState {
 			}
 			gsm.setState(GameStateManager.LEVEL1STATE);
 		}
-		if(currentChoice == 1) {
+		if(currentChoice == 2) {
 			gsm.setState(GameStateManager.CREDITS);
 		}
-		if(currentChoice == 2) {
+		if(currentChoice == 3) {
 			audioPlayer.close();
 			System.exit(0);
 		}
-		if(currentChoice == 3) {
+		if(currentChoice == 1) {
 			JFileChooser fc = new JFileChooser(new File(System.getProperty("user.dir")));
 			if(fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
 				Level1State.loadYouLevel = true;

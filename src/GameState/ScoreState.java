@@ -51,7 +51,7 @@ public class ScoreState extends GameState {
 		try {
 			target_time = Integer.parseInt(getString(data, "time"));
 		} catch (Exception e) {
-			target_time = 3600;
+			target_time = 60;
 		}
 		System.out.println(time + "/" + target_time + "  " + !(time > target_time));
 

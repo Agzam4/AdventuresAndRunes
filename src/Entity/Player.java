@@ -293,7 +293,14 @@ public class Player extends MapObject {
 		staticY = y;
 	}
 	
+	int hptimer = 0;
+	
 	public boolean update() {
+		hptimer++;
+		if(hptimer > 10 && health < maxHealth/2) {
+			health++;
+			hptimer = 0;
+		}
 		
 		// update position
 		getNextPosition();

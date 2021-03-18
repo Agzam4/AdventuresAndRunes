@@ -47,13 +47,13 @@ public class Background {
 	}
 	
 	public void draw(Graphics2D g, boolean fillY) {
-		
-		
+		g.setColor(new Color(28,51,29));
+		g.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
 		for (int xx = (int) x; xx < GamePanel.WIDTH; xx+= image.getWidth()) {
 			if(fillY)
 				g.drawImage(image, (int)xx, (int)y, image.getWidth(), GamePanel.HEIGHT, null);
 			else
-				g.drawImage(image, (int)xx, (int)y, null);
+				g.drawImage(image, (int)xx, -image.getHeight() + GamePanel.HEIGHT + (int)y, null);
 				
 		}
 //		if(x < 0) {

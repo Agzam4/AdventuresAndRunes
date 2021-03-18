@@ -177,7 +177,8 @@ public class Level1State extends GameState {
 				gsm.setState(GameStateManager.LEVEL1STATE);
 			}
 			
-			if(nextLevel) {
+			if(nextLevel || GamePanel.code.equals("/SKIPLEVEL")) {
+				GamePanel.code = "";
 //				if(!loadYouLevel) {
 //					UserData.writeData("level", (level+1) + "");
 //				}
@@ -191,7 +192,7 @@ public class Level1State extends GameState {
 	public void draw(Graphics2D g) {
 		
 		// draw bg
-		bg.draw(g, true);
+		bg.draw(g, false);
 		if(screenDarknes < 0)
 			screenDarknes = 0;
 		if(screenDarknes > 200)
