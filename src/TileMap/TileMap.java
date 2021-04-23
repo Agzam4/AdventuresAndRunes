@@ -5,7 +5,6 @@ import java.awt.image.*;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
@@ -88,7 +87,7 @@ public class TileMap {
 						tileSize,
 						tileSize
 					);
-				tiles[2][col] = new Tile(subimage, Tile.FINISH);
+				tiles[2][col] = new Tile(subimage, 20+col);
 				
 			}
 			
@@ -99,6 +98,10 @@ public class TileMap {
 		
 	}
 	
+	public int[][] getMap() {
+		return map;
+	}
+	
 	public String getString(String data, String name) throws StringIndexOutOfBoundsException {
 		return data.substring(data.indexOf("<" + name + ">") + name.length()+2, data.indexOf("</" + name + ">"));
 	}
@@ -107,7 +110,7 @@ public class TileMap {
 	}
 	
 	public String formData = "";
-	public void loadMap(String s) {
+public void loadMap(String s) {
 		
 		try {
 
@@ -210,6 +213,45 @@ public class TileMap {
 //		}
 		
 	}
+public void loadMap2(String s) {
+	try {
+		String data = "";
+				
+		data = new String(Files.readAllBytes(Paths.get(s)));
+		String formatedData = data.replaceAll(" ", "").replaceAll("\n", "").replaceAll("\r", "")
+				.replaceAll("\\n", "\n").replaceAll("\\s", " ");
+		System.err.println(formatedData);
+		formData = formatedData;
+		String dataArr[] = getStringArr(formatedData, "size");
+		numCols = Integer.parseInt(dataArr[0]);
+		numRows = Integer.parseInt(dataArr[1]);
+		map = new int[numRows][numCols];
+		width = numCols * tileSize;
+		height = numRows * tileSize;
+		xmin = GamePanel.WIDTH - width;
+		xmax = 0;
+		ymin = GamePanel.HEIGHT - height;
+		ymax = 0;
+		System.err.println(numCols + "x" + numRows);
+		
+		dataArr = getStringArr(formatedData, "map");
+		
+		for(int row = 0; row < numRows; row++) {
+			for(int col = 0; col < numCols; col++) {
+				try {
+					map[row][col] =
+							Integer.parseInt(dataArr[col + row*numCols]);
+					
+				} catch (Exception e) {
+				}
+			}
+		}
+	} catch (IOException | NullPointerException e ) {
+		UserData.writeData("level", "0");
+		e.printStackTrace();
+		System.exit(0);
+	}
+}
 	
 	public int getTileSize() { return tileSize; }
 	public double getx() { return x; }

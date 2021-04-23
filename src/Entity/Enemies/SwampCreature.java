@@ -9,20 +9,22 @@ import javax.imageio.ImageIO;
 import Entity.Animation;
 import TileMap.TileMap;
 
-public class Goblin extends TYPE_Tank {
+public class SwampCreature extends TYPE_Tank {
 
 	private ArrayList<BufferedImage[]> sprites;
-
+	
 	private final int[] numFrames = {
 			2, 6, 1, 2, 4, 2, 5
 	};
 	
-	public Goblin(TileMap tm) {
+	public SwampCreature(TileMap tm){
 
 		super(tm);
 
-		moveSpeed = 0.6;
-		maxSpeed = 0.3;
+		hasSwampBoost = true;
+		
+		moveSpeed = 0.7;
+		maxSpeed = 0.7;
 		fallSpeed = 0.2;
 		maxFallSpeed = 10.0;
 
@@ -34,8 +36,8 @@ public class Goblin extends TYPE_Tank {
 		cwidth = 15;
 		cheight = 20;
 
-		health = maxHealth = 50;
-		damage = 250;
+		health = maxHealth = 150;
+		damage = 300;
 		
 		maxHP = maxHealth;
 
@@ -46,7 +48,7 @@ public class Goblin extends TYPE_Tank {
 				
 				BufferedImage spritesheet = ImageIO.read(
 					getClass().getResourceAsStream(
-						"/Sprites/Enemies/goblin.png"
+						"/Sprites/Enemies/swamp_creature.png"
 					)
 				);
 				
@@ -99,10 +101,25 @@ public class Goblin extends TYPE_Tank {
 
 	}
 
-
 	public void update() {
+
 		super.update();
 		
+		// update position
+//		getNextPosition();
+//		checkTileMapCollision();
+//		setPosition(xtemp, ytemp);
+//
+//		// check flinching
+//		if(flinching) {
+//			long elapsed =
+//					(System.nanoTime() - flinchTimer) / 1000000;
+//			if(elapsed > 400) {
+//				flinching = false;
+//			}
+//		}
+		
+		// check attack has stopped
 				if(currentAction == SCRATCHING) {
 					if(animation.hasPlayedOnce()) scratching = false;
 				}
@@ -110,6 +127,7 @@ public class Goblin extends TYPE_Tank {
 					if(animation.hasPlayedOnce()) firing = false;
 				}
 				
+				// set animation
 				if(scratching) {
 					if(currentAction != SCRATCHING) {
 						currentAction = SCRATCHING;
@@ -161,19 +179,26 @@ public class Goblin extends TYPE_Tank {
 				
 				animation.update();
 				
+				// set direction
 				if(currentAction != SCRATCHING && currentAction != FIREBALL) {
 					if(right) facingRight = true;
 					if(left) facingRight = false;
 				}
 				
 
+		// update animation
 		animation.update();
 
 	}
 
 	public void draw(Graphics2D g) {
+
+		//if(notOnScreen()) return;
+
 		setMapPosition();
+
 		hp = health;
 		super.draw(g);
+
 	}
 }

@@ -1,6 +1,5 @@
 package Entity.Enemies;
 
-import java.awt.Container;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -10,10 +9,7 @@ import javax.imageio.ImageIO;
 import Entity.Animation;
 import Entity.Arrow;
 import Entity.Enemy;
-import Entity.FireBall;
 import Entity.Player;
-import Main.GamePanel;
-import TileMap.Tile;
 import TileMap.TileMap;
 
 public class GoblinArcher extends Enemy{
@@ -28,14 +24,12 @@ public class GoblinArcher extends Enemy{
 	
 
 	private double fire;
-	private double maxFire;
 	private int fireCost;
 
 	private static final int IDLE = 0;
 	private static final int WALKING = 1;
 	private static final int JUMPING = 2;
 	private static final int FALLING = 3;
-	private static final int GLIDING = 4;
 	private static final int FIREBALL = 5;
 	private static final int SCRATCHING = 6;
 
@@ -60,7 +54,7 @@ public class GoblinArcher extends Enemy{
 		jumpStart = -4.8;
 		stopJumpSpeed = 0.3;
 
-		fire = maxFire = 10;
+		fire  = 10;
 		fireCost = 6;
 		arrows = new ArrayList<Arrow>();
 		

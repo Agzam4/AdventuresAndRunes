@@ -33,6 +33,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class JEditor2 extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JPanel panel_1;
 	private EditorJPanel editorJPanel;

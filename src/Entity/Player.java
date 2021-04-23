@@ -21,7 +21,7 @@ public class Player extends MapObject {
 	private double fire;
 	private double maxFire;
 	private int glidingCost;
-	private boolean dead;
+	public boolean dead;
 	private boolean flinching;
 	private long flinchTimer;
 	
@@ -209,7 +209,7 @@ public class Player extends MapObject {
 		}
 		
 	}
-	
+
 	public void hit(int damage) {
 		if(damage > 0) {
 			if(flinching) return;
@@ -218,6 +218,12 @@ public class Player extends MapObject {
 			if(health == 0) dead = true;
 			flinching = true;
 			flinchTimer = System.nanoTime();
+		}
+	}
+	public void heal(int damage) {
+		if(damage > 0) {
+			health += damage;
+			if(health > maxHealth) health = maxHealth;
 		}
 	}
 	
@@ -265,6 +271,10 @@ public class Player extends MapObject {
 			dy = jumpStart;
 			falling = true;
 		}
+		if(jumping && tochSwamp) {
+			dy = jumpStart/10;
+			falling = true;
+		}
 		
 		// falling
 		if(falling) {
@@ -296,6 +306,17 @@ public class Player extends MapObject {
 	int hptimer = 0;
 	
 	public boolean update() {
+		if(tochSwamp)
+			dx = dx/2.5;
+		if(tochSwamp)
+			dy = dy/2.5;
+				
+		if(GamePanel.code.equals("/DEV/NULL/")){
+			maxSpeed = 5;
+			moveSpeed = 1;
+			health = maxHealth = 99999;
+			jumpStart = -8;
+		}
 		hptimer++;
 		if(hptimer > 10 && health < maxHealth/2) {
 			health++;
@@ -432,9 +453,19 @@ public class Player extends MapObject {
 				return;
 			}
 		}
-		
+
+		if(tochSwamp)
+				dy = 0;
 		super.draw(g);
 		
+//		// NOTFIXME
+//		g.setColor(Color.RED);
+//		g.drawString((int)x/30+ " " + (int)y/30 , (int)(x + xmap - width / 2), (int)(y + ymap - height / 2));
+		
+	}
+	public void addVector(double x, double y) {
+		dx+= x;
+		dy+= y;
 	}
 
 	public static double staticX;

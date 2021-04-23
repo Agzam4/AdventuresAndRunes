@@ -6,32 +6,42 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
-public class FireBall extends MapObject {
+import GameState.Level1State;
+
+public class Rune extends Enemy {
 	
 	private boolean hit;
 	private boolean remove;
 	private BufferedImage[] sprites;
 	private BufferedImage[] hitSprites;
+
+	public static final int FIREBALL = 0;
+	public static final int SLOW_FALLING = 0;
 	
-	public FireBall(TileMap tm, boolean right) {
+	Level1State level1State;
+	
+	public Rune(TileMap tm, int type, Level1State level1State) {
 		
 		super(tm);
+		
+		this.level1State = level1State;
 		
 		facingRight = right;
 		
 		moveSpeed = 3.8;
-		if(right) dx = moveSpeed;
-		else dx = -moveSpeed;
+		dx = Math.random()*20 - 10;
+		dy = Math.random()*10;
 		
 		width = 30;
 		height = 30;
-		cwidth = 14;
-		cheight = 14;
+		cwidth = 13;
+		cheight = 13;
 		
 		try {
+			
 			BufferedImage spritesheet = ImageIO.read(
 				getClass().getResourceAsStream(
-					"/Sprites/Player/fireball.png"
+					"/Sprites/Player/rune" + type + ".png"
 				)
 			);
 			
@@ -59,42 +69,54 @@ public class FireBall extends MapObject {
 			animation.setFrames(sprites);
 			animation.setDelay(70);
 			
-		}
-		catch(Exception e) {
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		
 	}
 	
-	public void setHit() {
-		if(hit) return;
-		hit = true;
-		animation.setFrames(hitSprites);
-		animation.setDelay(70);
-		dx = 0;
+	public int timee = 100;
+	
+	public void setHit(int damge) {
+		if(timee < 1) {
+			if(hit) return;
+			hit = true;
+			animation.setFrames(hitSprites);
+			animation.setDelay(70);
+			dx = 0;
+		}else {
+		}
 	}
 	
 	public boolean shouldRemove() { return remove; }
 	
 	public void update() {
+		timee--;
 		
+		dy++;
+		if(dy > 10)
+			dy = 10;
+		
+		dx = dx*0.8;
 		checkTileMapCollision();
 		setPosition(xtemp, ytemp);
 		
-		if(dx == 0 && !hit) {
-			setHit();
-		}
-		
 		animation.update();
-		if(hit && animation.hasPlayedOnce()) {
-			remove = true;
+		if(timee < 100) {
+		}else {
+			if(hit && animation.hasPlayedOnce()) {
+				remove = true;
+			}
 		}
 		
 	}
 	
 	public void draw(Graphics2D g) {
+		
 		setMapPosition();
+		
 		super.draw(g);
+		
 	}
 	
 }

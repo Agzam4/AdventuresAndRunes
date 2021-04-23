@@ -2,14 +2,16 @@ package GameState;
 
 import TileMap.Background;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.swing.JFileChooser;
 
 import Audio.AudioPlayer;
-import Main.Game;
+import Data.UserData;
 import Main.GamePanel;
 
 public class MenuState extends GameState {
@@ -37,7 +39,14 @@ public class MenuState extends GameState {
 	public static boolean isMusicPlay = false;
 	
 	public MenuState(GameStateManager gsm) {
-		
+		if(UserData.isWebDay()) {
+			options = new String[] {
+					"<a href=\"#\" onClick=\"gameStart()\">Start</a>",
+					"<a href=\"#\" onClick=\"loadLevel()\">Load Level</a>",
+					"<a href=\"#\" onClick=\"credits()\">Credits</a>",
+					"<a href=\"#\" onClick=\"exit()\">Quit</a>",
+				};
+		}
 		this.gsm = gsm;
 		dark = 255;
 		
@@ -71,26 +80,29 @@ public class MenuState extends GameState {
 	
 	public void draw(Graphics2D g) {
 		
-		// draw bg
 		bg.draw(g, true);
 		
-		// draw title
 		g.setColor(titleColor);
 		g.setFont(titleFont);
 		String title = "Adventures & Runes";
-//		g.drawString(title, GamePanel.WIDTH/2 - g.getFontMetrics().stringWidth(title)/2, );
+		if(UserData.isWebDay()) {
+			title = "<h1>Adventures &#38; Runes</h1>";
+		}
 
 		drawStr(g, title, (int) (GamePanel.HEIGHT / 4 * 1.2), Color.WHITE, Color.BLACK);
-		// draw menu options
 		g.setFont(font);
 		for(int i = 0; i < options.length; i++) {
 			if(i == currentChoice && light[i] < 250)
 				light[i]+=10;
 			else if(light[i] > 65)
 				light[i]-=10;
-			drawStr(g, i == currentChoice ? "> " +  options[i] + " <" : options[i], GamePanel.HEIGHT / 4 * 2 + i * 15,
+			if(UserData.isWebDay()) {
+				drawStr(g, i == currentChoice ? "&#62; " +  options[i] + " &#60" : options[i], GamePanel.HEIGHT / 4 * 2 + i * 15,
+						new Color(light[i],light[i],light[i]), Color.BLACK);
+			}else {
+				drawStr(g, i == currentChoice ? "> " +  options[i] + " <" : options[i], GamePanel.HEIGHT / 4 * 2 + i * 15,
 					new Color(light[i],light[i],light[i]), Color.BLACK);
-//			g.drawString(options[i], GamePanel.WIDTH/2 - g.getFontMetrics().stringWidth(options[i])/2, GamePanel.HEIGHT / 4 * 2 + i * 15);
+			}
 		}
 		
 			if(dark > 5)

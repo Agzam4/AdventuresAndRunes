@@ -107,9 +107,14 @@ public abstract class MapObject {
 		bottomRight = br == Tile.BLOCKED;
 		tochFinish = tl == Tile.FINISH || tr == Tile.FINISH ||
 				bl ==  Tile.FINISH || br == Tile.FINISH;
+		
+		tochSwamp = tl == Tile.SWAMP || tr == Tile.SWAMP ||
+				bl ==  Tile.SWAMP || br == Tile.SWAMP;
 	}
 
 	public boolean tochFinish = false;
+
+	public boolean tochSwamp = false;
 	public boolean isWall = false;
 	
 	public void checkTileMapCollision() {
@@ -233,7 +238,6 @@ public abstract class MapObject {
 		}
 		
 		if(hp < maxHP) {
-//			System.out.println("Class: " + getClass() + " " + hp + "/" + maxHP);
 			g.setColor(Color.GRAY);
 			g.fillRect(
 					(int)(x + xmap - (tileSize - 5) / 2 ),

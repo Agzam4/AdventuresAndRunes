@@ -1,16 +1,26 @@
 package GameState;
 
 import Main.GamePanel;
-import TileMap.*;
-import Entity.*;
-import Entity.Enemies.*;
+import TileMap.Background;
+import TileMap.TileMap;
 import Audio.AudioPlayer;
 import Data.UserData;
+import Entity.Enemy;
+import Entity.Explosion;
+import Entity.HUD;
+import Entity.Player;
+import Entity.Rune;
+import Entity.Enemies.Goblin;
+import Entity.Enemies.GoblinArcher;
+import Entity.Enemies.GoblinBoss;
+import Entity.Enemies.GoblinWizard;
+import Entity.Enemies.SwampCreature;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.concurrent.Exchanger;
 
 public class Level1State extends GameState {
 	
@@ -46,10 +56,15 @@ public class Level1State extends GameState {
 	public static boolean loadYouLevel = false;
 	public static String youLevelURL = "";
 	
+
+	public static final String[] tilesetsName = {"forest", "swamp"};
+	public static int nameID = 0;
+	
 	public void init() {
-		
+		nameID = (int) Math.floor((level)/11.0);
+		System.out.println(level + " " + nameID);
 		tileMap = new TileMap(30);
-		tileMap.loadTiles("/Tilesets/forest.png");
+		tileMap.loadTiles("/Tilesets/" + tilesetsName[nameID] + ".png");
 		if(loadYouLevel)
 			tileMap.loadYouMap(youLevelURL);
 		else
@@ -57,7 +72,7 @@ public class Level1State extends GameState {
 		tileMap.setPosition(0, 0);
 		tileMap.setTween(1);
 		
-		bg = new Background("/Backgrounds/grassbg1.png", 0.1);
+		bg = new Background("/Backgrounds/" + tilesetsName[nameID] + ".png", 0.1);
 		
 		player = new Player(tileMap);
 		String[] start = tileMap.getStringArr(tileMap.formData, "start");
@@ -68,11 +83,17 @@ public class Level1State extends GameState {
 		explosions = new ArrayList<Explosion>();
 		
 		hud = new HUD(player);
-		
-		bgMusic = new AudioPlayer("/Music/level1-1.mp3");
-		bgMusic.play(-1);
+		if(level%11 < 10) {
+			bgMusic = new AudioPlayer("/Music/level" + (nameID + 1) + ".mp3");
+			bgMusic.play(-1);
+		} else if(level%11 == 10) {
+			bgMusic = new AudioPlayer("/Music/boss" + (nameID + 1) + ".mp3");
+			bgMusic.setVolume(0.1f);
+		}
 		
 	}
+	
+	float vol = 0;
 	
 	private void populateEnemies() {
 		
@@ -100,6 +121,17 @@ public class Level1State extends GameState {
 					case "goblin_wizard":
 						s = new GoblinWizard(tileMap, player);
 						break;
+					case "goblinboss":
+						s = new GoblinBoss(tileMap, player);
+						System.err.println("BOSS");
+						break;
+					
+					// SWAMP
+					
+					case "swamp_creature":
+						s = new SwampCreature(tileMap);
+						System.err.println("BOSS");
+						break;
 					default:
 						s = new Enemy(tileMap);
 						break;
@@ -112,6 +144,8 @@ public class Level1State extends GameState {
 		} catch (NumberFormatException e) {
 		}
 	}
+	
+	boolean itemIsDropped = false;
 	
 	private void drawStr(Graphics2D g, String str, int y, Color c1, Color c2) {
 		g.setColor(c2);
@@ -131,13 +165,29 @@ public class Level1State extends GameState {
 		g.drawString(str, x, y);
 	}
 	public void update() {
+		try {
+		if(level == 10 && !bgMusic.isPlaying() && player.gety()/30 > 10) {
+			bgMusic.play(-1);
+			vol = 0.1f;
+		}
+		float v1 = vol;
+		if(level == 10 && enemies.size() > 0) {
+			vol += 0.01;
+			if(vol > 1)
+				vol = 1;
+		}else {
+			vol -= 0.01;
+			if(vol < 0)
+				vol = 0;
+		}
+		if(v1 != vol) {
+			bgMusic.setVolume(vol);
+		}
 		screenDarknes = 0;
 		if(isPaused) {
-			// set background
 			
 			//drawStr(g, "", GamePanel.HEIGHT/2, c1, c2);
 		}else {
-			// update player
 			nextLevel = player.update();
 			
 			tileMap.setPosition(
@@ -145,21 +195,37 @@ public class Level1State extends GameState {
 				GamePanel.HEIGHT / 2 - player.gety()
 			);
 			
-			// set background
 			bg.setPosition(tileMap.getx(), tileMap.gety());
 			
-			// attack enemies
 			player.checkAttack(enemies);
 			
-			// update all enemies
 			for(int i = 0; i < enemies.size(); i++) {
 				Enemy e = enemies.get(i);
 				e.update();
 				if(e.isDead()) {
-					enemies.remove(i);
-					i--;
-					explosions.add(
-						new Explosion(e.getx(), e.gety()));
+					if(itemIsDropped) {
+						if(level % 11 == 10) {
+							if(((Rune)e).timee < 1)
+							nextLevel = true;
+						}
+					}else {
+						if(level % 11 == 10) {
+							if(enemies.size()==1) {
+								Rune rune = new Rune(tileMap, Rune.FIREBALL, this);// FIXME
+								rune.setPosition(enemies.get(i).getx(), enemies.get(i).gety());
+								enemies.remove(i);
+								enemies.add(rune);
+								itemIsDropped = true;
+							}
+						}else {
+							enemies.remove(i);
+
+						}
+						i--;
+						explosions.add(
+								new Explosion(e.getx(), e.gety()));
+					};
+					
 				}
 			}
 			
@@ -179,19 +245,19 @@ public class Level1State extends GameState {
 			
 			if(nextLevel || GamePanel.code.equals("/SKIPLEVEL")) {
 				GamePanel.code = "";
-//				if(!loadYouLevel) {
-//					UserData.writeData("level", (level+1) + "");
-//				}
 				bgMusic.close();
 				gsm.setScoreState(startingTime, enemies.size(), player.getHealth(), tileMap.formData);//TODO
 			}
 			startingTime++;
+		
+		}	
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
 	public void draw(Graphics2D g) {
 		
-		// draw bg
 		bg.draw(g, false);
 		if(screenDarknes < 0)
 			screenDarknes = 0;
@@ -202,25 +268,20 @@ public class Level1State extends GameState {
 		g.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
 		
 		
-		// draw tilemap
 		tileMap.draw(g);
 		
-		// draw player
 		player.draw(g);
 		
-		// draw enemies
 		for(int i = 0; i < enemies.size(); i++) {
 			enemies.get(i).draw(g);
 		}
 		
-		// draw explosions
 		for(int i = 0; i < explosions.size(); i++) {
 			explosions.get(i).setMapPosition(
 				(int)tileMap.getx(), (int)tileMap.gety());
 			explosions.get(i).draw(g);
 		}
 		
-		// draw hud
 		hud.draw(g);
 		long timelost = (startingTime)/6;
 		String timing = timelost/10 + "." +  timelost%10;

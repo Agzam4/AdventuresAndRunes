@@ -28,7 +28,6 @@ public class Arrow extends MapObject {
 		cwidth = 13;
 		cheight = 6;
 		
-		// load sprites
 		try {
 			
 			BufferedImage spritesheet = ImageIO.read(
@@ -95,11 +94,8 @@ public class Arrow extends MapObject {
 	}
 	
 	public void draw(Graphics2D g) {
-		
 		setMapPosition();
-		
 		super.draw(g);
-		
 	}
 	
 }

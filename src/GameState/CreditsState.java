@@ -5,15 +5,12 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
-import Audio.AudioPlayer;
 import Main.GamePanel;
 import TileMap.Background;
 
 public class CreditsState extends GameState {
 
 	private Background bg;
-	private Font titleFont;
-	private Font font;
 	
 	private int dark = 0;
 	private double my = 0;
@@ -50,9 +47,9 @@ public class CreditsState extends GameState {
 			bg = new Background("/Backgrounds/menubg.png", 1);
 			bg.setVector(-0.2, 0);
 			
-			titleFont = new Font("Consolas",Font.PLAIN,28);
+//			titleFont = new Font("Consolas",Font.PLAIN,28);
 			
-			font = new Font("Arial", Font.PLAIN, 12);
+//			font = new Font("Arial", Font.PLAIN, 12);
 		}
 		catch(Exception e) {
 			e.printStackTrace();

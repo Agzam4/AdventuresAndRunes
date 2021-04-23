@@ -8,6 +8,8 @@ public class Enemy extends MapObject {
 	protected int maxHealth;
 	protected boolean dead;
 	protected int damage;
+	protected double protection = 1;
+	protected boolean isImmortal = false;
 	
 	protected boolean flinching;
 	protected long flinchTimer;
@@ -21,8 +23,9 @@ public class Enemy extends MapObject {
 	public int getDamage() { return damage; }
 	
 	public void hit(int damage) {
+		if(isImmortal) return;
 		if(dead || flinching) return;
-		health -= damage;
+		health -= damage*protection;
 		if(health < 0) health = 0;
 		if(health == 0) dead = true;
 		flinching = true;

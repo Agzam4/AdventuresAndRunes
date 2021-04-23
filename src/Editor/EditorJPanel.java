@@ -1,7 +1,6 @@
 package Editor;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -24,9 +23,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
-import Entity.Enemy;
-import Entity.Enemies.Goblin;
-import Main.GamePanel;
 import TileMap.Tile;
 import TileMap.TileMap;
 
@@ -51,14 +47,14 @@ public class EditorJPanel extends JPanel {
 
 	public EditorJPanel() {
 		tileMap = new TileMap(30);
-		tileMap.loadTiles("/Tilesets/forest.png");
-		tileMap.loadMap("/Maps/level" + 0 + ".map");
+//		tileMap.loadTiles("/Tilesets/swamp.png");
+//		tileMap.loadMap("/Maps/level" + 0 + ".map");
 		tileMap.setPosition(0, 0);
 		tileMap.setTween(1);
 		
 		map = new int[height][width];
 		try {
-			BufferedImage tileset = ImageIO.read(getClass().getResourceAsStream("/Tilesets/forest.png"));
+			BufferedImage tileset = ImageIO.read(getClass().getResourceAsStream("/Tilesets/swamp.png")); // TODO
 			int numTilesAcross = tileset.getWidth() / 30;
 			tiles = new Tile[3][numTilesAcross];
 			imgs = new BufferedImage[3*21];
@@ -198,6 +194,9 @@ public class EditorJPanel extends JPanel {
 			}
 			
 			public void loadYouMap(String youLevelURL) {
+				tileMap.loadMap2(youLevelURL);
+				tileMap.setPosition(0, 0);
+				tileMap.setTween(1);
 				String data;
 				try {
 					data = new String(Files.readAllBytes(Paths.get(youLevelURL)));
@@ -378,7 +377,7 @@ public class EditorJPanel extends JPanel {
 
 	ArrayList<EnemyImgs> enemies = new ArrayList<EnemyImgs>();
 
-	public static final String[] ENEMYS_NAMES = {"goblin","goblin_archer","goblin_wizard","enemy"}; // TODO
+	public static final String[] ENEMYS_NAMES = {"goblin","goblin_archer","goblin_wizard","swamp_creature"}; // TODO
 	public final BufferedImage[] ENEMYS_IMGS = getImgs();
 	public static final int GOBLIN = 0;
 	public static final int ENEMY = 1;

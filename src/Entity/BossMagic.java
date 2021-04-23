@@ -6,32 +6,48 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
+import Entity.Enemies.GoblinBoss;
 
-public class StaticMagic extends MapObject {
+public class BossMagic extends MapObject {
 	
 	private boolean hit;
 	private boolean remove;
-	private boolean isStatic;
 	private BufferedImage[] sprites;
 	private BufferedImage[] spawnSprites;
 	
+	public static int HOMING_IN = 0;
 	
-	public StaticMagic(TileMap tm, boolean right, boolean isStatic) {
+	GoblinBoss goblinBoss;
+	Player player;
+	int type;
+	double dir = 0;
+
+	private final double[] speedArr = {1};
+	private final double[] maxSpeedArr = {3};
+	
+	public BossMagic(TileMap tm, GoblinBoss boss, Player player, int type) {
 		
 		super(tm);
-		this.isStatic = isStatic;
+		
+		x = boss.getx();
+		y = boss.gety();
+		dir = Math.atan2(boss.getx(),boss.gety());
+		
+		goblinBoss = boss;
+		this.player = player;
+		this.type = type;
+		
 		facingRight = right;
 		
-		moveSpeed = 3.8;
-		if(right) dx = moveSpeed;
-		else dx = -moveSpeed;
+		moveSpeed = speedArr[type];
+		maxSpeed = maxSpeedArr[type];
 		
 		width = 30;
 		height = 30;
 		cwidth = 15;
 		cheight = 15;
+		dir = Math.atan2(player.getx()-x,player.gety()-y);
 		
-		// load sprites
 		try {
 			
 			BufferedImage spritesheet = ImageIO.read(
@@ -82,16 +98,37 @@ public class StaticMagic extends MapObject {
 	public boolean shouldRemove() { return remove; }
 	
 	int timing = 0;
+	double speed = 0;
 	
 	public void update() {
-		
-		checkTileMapCollision();
-		if(!isStatic)
-		setPosition(xtemp, ytemp);
+		switch (type) {
+		case 0:
+			double wx = player.getx()-x;
+			double wy = player.gety()-y;
+			double ndir = Math.atan2(player.getx()-x,player.gety()-y);
+			dir = (dir-ndir) * 0.95 + ndir;
+			speed += (50-Math.sqrt(wx*wx + wy*wy))/-250;
+			if(speed > 5)
+				speed = 5;
+			if(speed < -5)
+				speed = -5;
+			dx = Math.sin(dir)*speed;
+			dy = Math.cos(dir)*speed;
+			break;
+		default:
+			break;
+		}
 		
 		if(timing > 1000 && !hit) {
-			setHit();
+			hit = true;
+			animation.setFrames(spawnSprites);
+			animation.setDelay(70);
 		}
+		
+		checkTileMapCollision();
+		
+		setPosition(xtemp, ytemp);
+		
 		timing++;
 		animation.update();
 		if(hit && animation.hasPlayedOnce()) {
@@ -107,7 +144,13 @@ public class StaticMagic extends MapObject {
 		setMapPosition();
 		super.draw(g);
 	}
-	
+
+	public double getDx() {
+		return dx;
+	}
+	public double getDy() {
+		return dy;
+	}
 }
 
 

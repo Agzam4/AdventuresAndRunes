@@ -6,32 +6,32 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
-public class FireBall extends MapObject {
+public class Life extends MapObject {
 	
 	private boolean hit;
 	private boolean remove;
 	private BufferedImage[] sprites;
 	private BufferedImage[] hitSprites;
 	
-	public FireBall(TileMap tm, boolean right) {
+	public Life(TileMap tm) {
 		
 		super(tm);
 		
 		facingRight = right;
 		
 		moveSpeed = 3.8;
-		if(right) dx = moveSpeed;
-		else dx = -moveSpeed;
+		dx = Math.random()*20 - 10;
+		dy = Math.random()*10;
 		
 		width = 30;
 		height = 30;
-		cwidth = 14;
-		cheight = 14;
+		cwidth = 13;
+		cheight = 13;
 		
 		try {
 			BufferedImage spritesheet = ImageIO.read(
 				getClass().getResourceAsStream(
-					"/Sprites/Player/fireball.png"
+					"/Sprites/Player/Life.png"
 				)
 			);
 			
@@ -66,6 +66,8 @@ public class FireBall extends MapObject {
 		
 	}
 	
+	int timee = 0;
+	
 	public void setHit() {
 		if(hit) return;
 		hit = true;
@@ -78,16 +80,21 @@ public class FireBall extends MapObject {
 	
 	public void update() {
 		
+		dy++;
+		if(dy > 10)
+			dy = 10;
+		
+		dx = dx*0.8;
 		checkTileMapCollision();
 		setPosition(xtemp, ytemp);
 		
-		if(dx == 0 && !hit) {
-			setHit();
-		}
-		
 		animation.update();
-		if(hit && animation.hasPlayedOnce()) {
-			remove = true;
+		if(timee < 5000) {
+			timee++;
+		}else {
+			if(hit && animation.hasPlayedOnce()) {
+				remove = true;
+			}
 		}
 		
 	}

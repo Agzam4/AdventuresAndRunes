@@ -10,11 +10,10 @@ import javax.imageio.ImageIO;
 
 import Data.UserData;
 import Main.GamePanel;
-import TileMap.Background;
 
 public class ScoreState extends GameState {
 	
-	private BufferedImage bg = getImage("/Backgrounds/grassbg1.png");
+	private BufferedImage bg = getImage("/Backgrounds/" + Level1State.tilesetsName[Level1State.nameID] + ".png");
 	BufferedImage star = getImage("/HUD/star.png");
 	BufferedImage unstar = getImage("/HUD/unstar.png");
 	
@@ -30,6 +29,8 @@ public class ScoreState extends GameState {
 	double $time;
 	double $enemy;
 	double $hp;
+	
+	double cosTime;
 	
 	int stars = 0;
 	
@@ -100,32 +101,61 @@ public class ScoreState extends GameState {
 	
 	@Override
 	public void update() {
+		cosTime+=0.1;
 	}
 
 	@Override
 	public void draw(Graphics2D g) {
 		try {
-			g.drawImage(bg, 0, 0, GamePanel.WIDTH, GamePanel.HEIGHT, null);
-			drawStar(g, GamePanel.WIDTH/2 - 50, GamePanel.HEIGHT/3, 1.5, stars > -1);
-			drawStar(g, GamePanel.WIDTH/2, GamePanel.HEIGHT/3, 2, stars > 1);
-			drawStar(g, GamePanel.WIDTH/2 + 50, GamePanel.HEIGHT/3, 1.5, stars > 2);
+//			double plusCos = Math.cos(cosTime*0.5)*5;
 
+//			GamePanel.fullImage = new BufferedImage(
+//					GamePanel.d.width, GamePanel.d.height,
+//					BufferedImage.TYPE_INT_ARGB
+////					);
+			Graphics2D fg = (Graphics2D) GamePanel.fullImage.getGraphics();
+//			fg.setComposite(composite);
+//			fg.setColor(new Color(0, 0, 0, 0));
+//			fg.fillRect(0, 0, GamePanel.fullImage.getWidth(), GamePanel.fullImage.getHeight());
+//			fg.setComposite(composite2);
+			GameStateManager.fullIImgIsClear = false;
+			for (int i = -1; i < 2; i++) {
+				drawStar(fg, (GamePanel.WIDTH/2 + 50*i)*GamePanel.SCALE,
+						(int) ((GamePanel.HEIGHT/3 +
+								Math.cos(cosTime*(stars>i+1?0.5:0.4))*(i==0?7:5)
+								)*GamePanel.SCALE),
+						(i==0 ? 2 : 1.5)*GamePanel.SCALE, stars > i+1);
+//				drawStar(fg, GamePanel.WIDTH/2*GamePanel.SCALE, 		(int) ((GamePanel.HEIGHT/3+plusCos)*GamePanel.SCALE), 2*GamePanel.SCALE, stars > 1);
+//				drawStar(fg, (GamePanel.WIDTH/2 + 50)*GamePanel.SCALE,	(int) ((GamePanel.HEIGHT/3+plusCos)*GamePanel.SCALE), 1.5*GamePanel.SCALE, stars > 2);
+			}
+			fg.dispose();
+			
+
+			g.drawImage(bg, 0, 0, GamePanel.WIDTH, GamePanel.HEIGHT, null);
+			
 			int h = GamePanel.HEIGHT/3;
 			int w = GamePanel.WIDTH/2;
 			Color yellow = new Color(250,255,155);
-			drawStr(g, "Enemies last: ", 25, h + 75, enemy == 0 ? yellow : Color.GRAY, Color.BLACK);
-			drawStr(g, "Time: ", 25, h + 100,  !(time > target_time) ? yellow : Color.GRAY, Color.BLACK);
-			drawStr(g, "HP: ", 25, h + 125,  hp > 333 ? yellow : Color.GRAY, Color.BLACK);
 
-			drawStr(g, "" + enemy, w, h + 75, enemy == 0 ? yellow : Color.GRAY, Color.BLACK);
-			drawStr(g, time + "/" + target_time , w, h + 100, !(time > target_time) ? yellow : Color.GRAY, Color.BLACK);
-			drawStr(g, "HP: " + hp/10 + "/33%" , w, h + 125, hp > 333 ? yellow : Color.GRAY, Color.BLACK);
+			String starInfoStr[] = {"Enemies last: ","Time: ", "HP: "};
+			String starInfo2Str[] = {enemy + "",time + "/"+target_time, "HP: " + hp/10 + "/33%"};
+			boolean bools[] = {enemy == 0,!(time > target_time), hp > 333};
+			int gb = (int) (Math.cos(cosTime)*40 + 75);
+			Color gray = new Color(255, gb, gb);
+			Color yellow2 = new Color(255, 255, gb);
+			for (int i = 0; i < starInfoStr.length; i++) {
+				drawStr(g, starInfoStr[i], 25, h + 75 + i*25, bools[i] ? yellow : gray, Color.BLACK);
+				drawStr(g, starInfo2Str[i], w, h + 75+ i*25,  bools[i] ? yellow : gray, Color.BLACK);
+			}
 		
 			for (int j = 0; j < options.length; j++) {
 				String str = j == currentChoice ? "> " + options[j] + " <": options[j];
 				drawStr(g, str,
 						(GamePanel.WIDTH/3)*(j+1) - g.getFontMetrics().stringWidth(str)/2,
-						h*3 - 5, Color.WHITE, Color.BLACK);
+						h*3 - 5, (j == 0) ?
+								(stars < 3) ? gray : Color.WHITE
+								: 
+								(stars > 2) ? yellow2 : Color.WHITE, Color.BLACK);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

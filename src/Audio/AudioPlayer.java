@@ -5,11 +5,10 @@ import javax.sound.sampled.*;
 public class AudioPlayer {
 	
 	private Clip clip;
+	private boolean isPlaying = false;
 	
 	public AudioPlayer(String s) {
-		
 		try {
-			
 			AudioInputStream ais =
 				AudioSystem.getAudioInputStream(
 					getClass().getResourceAsStream(
@@ -45,11 +44,13 @@ public class AudioPlayer {
 			clip.setFramePosition(0);
 			clip.loop(loops);
 			clip.start();
+			isPlaying = true;
 		} catch (Exception e) {
 		}
 	}
 	
 	public void stop() {
+		isPlaying = false;
 		try {
 			if(clip.isRunning()) clip.stop();
 		} catch (Exception e) {
@@ -57,6 +58,7 @@ public class AudioPlayer {
 	}
 	
 	public void close() {
+		isPlaying = false;
 		try {
 		stop();
 		clip.close();
@@ -64,6 +66,18 @@ public class AudioPlayer {
 		}
 	}
 	
+	public void setVolume(float volume) {
+	    FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);        
+	    gainControl.setValue(20f * (float) Math.log10(volume));
+	}
+//	public void setVol(float v) {
+//		FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+//		gainControl.setValue(v);
+//	}
+	
+	public boolean isPlaying() {
+		return isPlaying;
+	}
 }
 
 

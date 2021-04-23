@@ -20,10 +20,8 @@ public class Game {
 		gamePanel = new GamePanel();
 		window.setContentPane(gamePanel);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		window.setResizable(false);
 		window.pack();
 		window.setVisible(true);
-		
 	}
 	
 }

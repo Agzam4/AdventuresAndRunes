@@ -1,14 +1,22 @@
 package GameState;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
+
+import Data.UserData;
+import Main.GamePanel;
 
 public class GameStateManager {
 	
 	private GameState[] gameStates;
 	private int currentState;
+
+	public static final int CSTATE = 6;
 	
-	public static final int NUMGAMESTATES = 6;
+	public static final int NUMGAMESTATES = 7;
+	
 	public static final int MENUSTATE = 0;
 	public static final int LEVEL1STATE = 1;
 	public static final int CREDITS = 2;
@@ -18,11 +26,13 @@ public class GameStateManager {
 		
 		gameStates = new GameState[NUMGAMESTATES];
 		
-		currentState = MENUSTATE;
+		currentState = UserData.isProgrammerDay() ? CSTATE : MENUSTATE;
 		loadState(currentState);
 	}
 	
 	private void loadState(int state) {
+		if(state == CSTATE)
+			gameStates[state] = new ConsoleState(this);
 		if(state == MENUSTATE)
 			gameStates[state] = new MenuState(this);
 		if(state == LEVEL1STATE)
@@ -54,7 +64,24 @@ public class GameStateManager {
 		} catch(Exception e) {}
 	}
 	
+	public static boolean fullIImgIsClear = true;
+	final AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f);
+	final AlphaComposite composite2 = AlphaComposite.getInstance(AlphaComposite.DST_OVER, 1f);
+	
 	public void draw(java.awt.Graphics2D g) {
+		if(!fullIImgIsClear) {
+			Graphics2D fg = (Graphics2D) GamePanel.fullImage.getGraphics();
+			fg.setComposite(composite);
+			fg.setColor(new Color(0, 0, 0, 0));
+			fg.fillRect(0, 0, GamePanel.fullImage.getWidth(), GamePanel.fullImage.getHeight());
+			fg.setComposite(composite2);
+		}
+			
+		
+//		GamePanel.fullImage = new BufferedImage(
+//				GamePanel.d.width, GamePanel.d.height,
+//				BufferedImage.TYPE_INT_ARGB
+//				);
 		try {
 			gameStates[currentState].draw(g);
 		} catch(Exception e) {}
