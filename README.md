@@ -1,6 +1,6 @@
 # AdventuresAndRunes
 Scrolling Platformer
-## [v2.0.2 | Swamp](https://github.com/Agzam4/AdventuresAndRunes/blob/main/Adventures%20%26%20Runes%20v2.0.2.jar)
+## [v2.1.0 | Swamp](https://github.com/Agzam4/AdventuresAndRunes/blob/main/Adventures%20%26%20Runes%20v2.1.0.jar)
 
 ### [v1.9.0](https://github.com/Agzam4/AdventuresAndRunes/blob/main/Adventures%20%26%20Runes%20v1.9.0.jar)
 
