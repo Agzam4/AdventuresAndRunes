@@ -65,6 +65,8 @@ public class Player extends MapObject {
 		cwidth = 20;
 		cheight = 20;
 		
+		fireUP = 0.5;
+		
 		moveSpeed = 0.3;
 		maxSpeed = 1.6;
 		stopSpeed = 0.4;
@@ -304,6 +306,7 @@ public class Player extends MapObject {
 	}
 	
 	int hptimer = 0;
+	private double fireUP;
 	
 	public boolean update() {
 		if(tochSwamp)
@@ -337,7 +340,7 @@ public class Player extends MapObject {
 		}
 		
 		// fireball attack
-		fire += 0.5;
+		fire += fireUP;
 		if(fire > maxFire) fire = maxFire;
 		if(firing && currentAction != FIREBALL) {
 			if(fire > fireCost) {
@@ -470,6 +473,11 @@ public class Player extends MapObject {
 
 	public static double staticX;
 	public static double staticY;
+	
+	
+	public double getFireUP() {
+		return fireUP;
+	}
 }
 
 

@@ -54,8 +54,8 @@ public class GamePanel extends JPanel
 		super.addNotify();
 		if(thread == null) {
 			thread = new Thread(this);
-			addKeyListener(this);
 			thread.start();
+			addKeyListener(this);
 		}
 	}
 	
@@ -104,8 +104,7 @@ public class GamePanel extends JPanel
 			
 			try {
 				Thread.sleep(wait);
-			}
-			catch(Exception e) {
+			} catch(Exception e) {
 				e.printStackTrace();
 			}
 			
@@ -159,6 +158,7 @@ public class GamePanel extends JPanel
 	}
 	
 	public static String code = "";
+	
 	public void keyPressed(KeyEvent key) {
 		gsm.keyPressed(key);
 	}

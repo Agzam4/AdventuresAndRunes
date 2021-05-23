@@ -26,7 +26,11 @@ public class TYPE_Tank extends Enemy {
 	@Override
 	public void update() {// update position
 		getNextPosition();
-		checkTileMapCollision();
+		try {
+			checkTileMapCollision();
+		} catch (ArrayIndexOutOfBoundsException e) {
+			health = 0;
+		}
 		setPosition(xtemp, ytemp);
 
 		// check flinching

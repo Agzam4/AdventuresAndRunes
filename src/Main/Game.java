@@ -4,11 +4,19 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import Data.UserData;
+
 public class Game {
 	
 	public static GamePanel gamePanel;
 	
 	public static void main(String[] args) {
+		for (String string : args) {
+			System.out.print(string + " ");
+		}
+		System.out.println("\n");
+		UserData.setArgs(args);
+		System.out.println("\n");
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException

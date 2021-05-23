@@ -1,6 +1,7 @@
 package Entity.Enemies;
 
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -10,21 +11,21 @@ import Entity.Animation;
 import Entity.Arrow;
 import Entity.Enemy;
 import Entity.Player;
+import Entity.Tongue;
 import TileMap.TileMap;
 
-public class GoblinArcher extends TYPE_Shooter {
+public class Frog extends Enemy {
 
 	private ArrayList<BufferedImage[]> sprites;
 	
 
 	private boolean scratching;
 	private boolean firing;
-	private int fireBallDamage = 100;
+	private int fireBallDamage = 200;
 	protected static int DAMAGE = 100;
 	
-//
-//	private double fire;
-//	private int fireCost;
+	private double fire;
+	private int fireCost;
 
 	private static final int IDLE = 0;
 	private static final int WALKING = 1;
@@ -39,9 +40,9 @@ public class GoblinArcher extends TYPE_Shooter {
 	private Player player;
 
 
-	private ArrayList<Arrow> arrows;
+	private ArrayList<Tongue> arrows;
 	
-	public GoblinArcher(TileMap tm, Player player) {
+	public Frog(TileMap tm, Player player) {
 		super(tm);
 		
 		this.player = player;
@@ -56,14 +57,14 @@ public class GoblinArcher extends TYPE_Shooter {
 
 		fire  = 10;
 		fireCost = 6;
-		arrows = new ArrayList<Arrow>();
+		arrows = new ArrayList<Tongue>();
 		
 		width = 30;
 		height = 30;
 		cwidth = 15;
 		cheight = 20;
 
-		health = maxHealth = 30;
+		health = maxHealth = 75;
 		damage = 250;
 		
 		maxHP = maxHealth;
@@ -75,7 +76,7 @@ public class GoblinArcher extends TYPE_Shooter {
 				
 				BufferedImage spritesheet = ImageIO.read(
 					getClass().getResourceAsStream(
-						"/Sprites/Enemies/goblin_archer.png"
+						"/Sprites/Enemies/frog.png"
 					)
 				);
 				
@@ -133,113 +134,128 @@ public class GoblinArcher extends TYPE_Shooter {
 	private void getNextPosition() {
 
 		// TODO: AI
-//		damage = 0;
-//		cwidth = 15;
-//		scratching = false;
-//		left = false;
-//		right = false;
-//		
-//		if(!isWall && !scratching && Math.abs(Player.staticX - x) < tileSize*3) {
-//			if (Player.staticX < x) {
-//				right = true;
-//				left = false;
-//			}
-//			if (Player.staticX > x) {
-//				left = true;
-//				right = false;
-//			}
-//		}else {
-//			if (!isWall && !scratching && Math.abs(Player.staticX - x) < tileSize*15 && Math.abs(Player.staticX - x) > tileSize*5) {
-//				if (Player.staticX < x) {
-//					left = true;
-//					right = false;
-//				}
-//				if (Player.staticX > x) {
-//					right = true;
-//					left = false;
-//				}
-//			}else {
-//				if((fire > fireCost && (int)(Player.staticY/tileSize) == (int)(y/tileSize)) || isWall) {
-//					if (Player.staticX < x && right) {
-//						facingRight = true;
-//					}	
-//					if (Player.staticX > x && left) {
-//						facingRight = false;
-//					}
-//					left = false;
-//					right = false;
-//					scratching = true;
-//					dx = 0;
-//				}
-//			}
-//		}
-//		
-//		if(Math.abs(Player.staticX - x) < tileSize * 10)
-//			jumping = Player.staticY < y - 5 && (right || left) && dx == 0;
-//		else {
-//			jumping = false;
-//			right = false;
+		damage = 0;
+		cwidth = 15;
+		scratching = false;
+		left = false;
+		right = false;
+		
+		boolean alf = false;
+		
+		if(Math.abs(Player.staticX - x) < tileSize*3 && !isWall) {
+			if (Player.staticX < x) {
+				right = true;
+				left = false;
+			}
+			if (Player.staticX > x) {
+				left = true;
+				right = false;
+			}
+		}else if(!(Math.abs(Player.staticX - x) < tileSize*4) || isWall) {
+			if (Math.abs(Player.staticX - x) > tileSize*6 && !isWall) {// && Math.abs(Player.staticX - x) > tileSize*5) {
+				if(!isWall && !scratching) {// && Math.abs(Player.staticX - x) > tileSize*5
+					if (Player.staticX < x) {
+						left = true;
+						right = false;
+					}
+					if (Player.staticX > x) {
+						right = true;
+						left = false;
+					}
+				}
+			}else {
+//				
+				if((fire > fireCost && dx*5 == 0 && (int)(Player.staticY/tileSize) == (int)(y/tileSize)) || isWall) {
+					if (Player.staticX < x && right) {
+						facingRight = true;
+					}	
+					if (Player.staticX > x && left) {
+						facingRight = false;
+					}
+					left = false;
+					right = false;
+					scratching = true;
+					dx = 0;
+				}else {
+					if(!(Math.abs(Player.staticX - x) > tileSize*6 -  player.getCWidth())) {
+						left = false;
+						right = false;
+						dx = 0;
+					}
+				}
+			}
+		}
+		
+		if(alf) {
+		}
+		
+
+		if(Math.abs(Player.staticX - x) < tileSize * 10)
+			jumping = Player.staticY < y - 5 && (right || left) && dx == 0;
+		else {
+			jumping = false;
+			right = false;
+			left = false;
+			dx = 0;
+		}
+		
+		// movement
+		if(isWall) {
 //			left = false;
-//			dx = 0;
-//		}
-//		
-//		// movement
-//		if(isWall) {
-//			left = false;
 //			right = false;
-//		}
-//		if(left) {
-//			dx -= moveSpeed;
-//			if(dx < -maxSpeed) {
-//				dx = -maxSpeed;
-//			}
-//		}
-//		else if(right) {
-//			dx += moveSpeed;
-//			if(dx > maxSpeed) {
-//				dx = maxSpeed;
-//			}
-//		}
-//
-//		// falling
-//		if(falling) {
-//			dy += fallSpeed;
-//		}
-//		
-//		if(jumping && !falling) {
-//			dy = jumpStart;
-//			falling = true;
-//		}
-//
-//		if(y+cheight > tileMap.getHeight()) {
-//			dead = true;
-//		}
+		}
+		if(left && !right) {
+			dx -= moveSpeed;
+			if(dx < -maxSpeed) {
+				dx = -maxSpeed;
+			}
+		}
+		if(right && !left) {
+			dx += moveSpeed;
+			if(dx > maxSpeed) {
+				dx = maxSpeed;
+			}
+		}
+
+		// falling
+		if(falling) {
+			dy += fallSpeed;
+		}
+		
+		if(jumping && !falling) {
+			dy = jumpStart;
+			falling = true;
+		}
+
+		if(y+cheight > tileMap.getHeight()) {
+			dead = true;
+		}
 		
 	}
+	
 
 	public void update() {
-		super.update();
 		// update position
-//		getNextPosition();
-//		checkTileMapCollision();
-//		setPosition(xtemp, ytemp);
-//
-//		// check flinching
-//		if(flinching) {
-//			long elapsed =
-//					(System.nanoTime() - flinchTimer) / 1000000;
-//			if(elapsed > 400) {
-//				flinching = false;
-//			}
-//		}
-//
-//		fire += 0.1;
-//		if(scratching) {
-//			if(fire > fireCost) {
-//				fire -= fireCost;
-//				startfirea = true;
-//			}
-//		}
+		getNextPosition();
+		checkTileMapCollision();
+		setPosition(xtemp, ytemp);
+
+		// check flinching
+		if(flinching) {
+			long elapsed =
+					(System.nanoTime() - flinchTimer) / 1000000;
+			if(elapsed > 400) {
+				flinching = false;
+			}
+		}
+
+		fire += 0.1;
+		if(scratching) {
+			if(fire > fireCost) {
+				fire -= fireCost;
+				startfirea = true;
+			}
+		}
 		// check attack has stopped
 				if(currentAction == SCRATCHING) {
 					if(animation.hasPlayedOnce()) scratching = false;
@@ -265,7 +281,7 @@ public class GoblinArcher extends TYPE_Shooter {
 						width = 30;
 					}
 					if(animation.getFrame() == numFrames[FIREBALL]-1) {
-						Arrow fb = new Arrow(tileMap, facingRight);
+						Tongue fb = new Tongue(tileMap, facingRight);
 						fb.setPosition(x, y);
 						arrows.add(fb);
 						startfirea = false;
@@ -287,7 +303,7 @@ public class GoblinArcher extends TYPE_Shooter {
 						width = 30;
 					}
 				}
-				else if((left || right) && !isWall) {
+				else if((Math.abs(Math.round(dx)) > 0)) {//left || right
 					if(currentAction != WALKING) {
 						currentAction = WALKING;
 						animation.setFrames(sprites.get(WALKING));

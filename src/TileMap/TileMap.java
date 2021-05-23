@@ -336,7 +336,6 @@ public void loadMap2(String s) {
 			}
 			String formatedData = data.replaceAll(" ", "").replaceAll("\n", "").replaceAll("\r", "")
 					.replaceAll("\\n", "\n").replaceAll("\\s", " ");
-			System.err.println(formatedData);
 			formData = formatedData;
 			String dataArr[] = getStringArr(formatedData, "size");
 			numCols = Integer.parseInt(dataArr[0]);

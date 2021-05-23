@@ -10,11 +10,15 @@ import Entity.Explosion;
 import Entity.HUD;
 import Entity.Player;
 import Entity.Rune;
+import Entity.Enemies.Frog;
 import Entity.Enemies.Goblin;
 import Entity.Enemies.GoblinArcher;
 import Entity.Enemies.GoblinBoss;
 import Entity.Enemies.GoblinWizard;
+import Entity.Enemies.Plant;
 import Entity.Enemies.SwampCreature;
+import Entity.Enemies.UpperPlant;
+import Entity.Enemies.WitchBoss;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -62,7 +66,7 @@ public class Level1State extends GameState {
 	
 	public void init() {
 		nameID = (int) Math.floor((level)/11.0);
-		System.out.println(level + " " + nameID);
+		System.out.println("\nLevel: " + level + " ID: " + nameID);
 		tileMap = new TileMap(30);
 		tileMap.loadTiles("/Tilesets/" + tilesetsName[nameID] + ".png");
 		if(loadYouLevel)
@@ -127,11 +131,24 @@ public class Level1State extends GameState {
 						break;
 					
 					// SWAMP
-					
+
 					case "swamp_creature":
 						s = new SwampCreature(tileMap);
-						System.err.println("BOSS");
 						break;
+					case "frog":
+						s = new Frog(tileMap, player);
+						break;
+					case "plant":
+						s = new Plant(tileMap);
+						break;
+					case "up_plant":
+						s = new UpperPlant(tileMap, player);
+						break;
+					case "witchboss":
+						System.out.println("WB");
+						s = new WitchBoss(tileMap, player);
+						break;
+						
 					default:
 						s = new Enemy(tileMap);
 						break;
@@ -256,6 +273,8 @@ public class Level1State extends GameState {
 		}
 	}
 	
+	double timeW = 0;
+	
 	public void draw(Graphics2D g) {
 		
 		bg.draw(g, false);
@@ -284,9 +303,18 @@ public class Level1State extends GameState {
 		
 		hud.draw(g);
 		long timelost = (startingTime)/6;
+		int sw = (int) timeW;
+		g.setColor(new Color(0,0,0,100));
+		g.fillRect(GamePanel.WIDTH - sw - 25, 5, (int) (timeW + 25), 25);
+		g.setColor(new Color(222,222,222));
 		String timing = timelost/10 + "." +  timelost%10;
-			g.drawString(timing, GamePanel.WIDTH - g.getFontMetrics().stringWidth(timing) - 5, 15);
-		
+			g.drawString(timing, GamePanel.WIDTH - sw - 10, 22);
+			g.drawLine(GamePanel.WIDTH - sw - 20, 25, GamePanel.WIDTH - sw - 18, 25);
+			g.drawLine(GamePanel.WIDTH - sw - 15, 25, GamePanel.WIDTH - 	 10, 25);
+			g.drawLine(GamePanel.WIDTH -	  7, 25, GamePanel.WIDTH -       3, 25);
+			
+			timeW = (timeW - g.getFontMetrics().stringWidth(timing))/2 + g.getFontMetrics().stringWidth(timing);
+			
 		if(isPaused) {
 			g.setColor(new Color(0,0,0,50));
 			g.fillRect(0, 0, GamePanel.WIDTH,  GamePanel.HEIGHT);

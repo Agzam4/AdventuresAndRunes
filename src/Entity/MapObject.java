@@ -6,6 +6,7 @@ import TileMap.Tile;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.color.ColorSpace;
 
 public abstract class MapObject {
 	
@@ -236,29 +237,51 @@ public abstract class MapObject {
 				null
 			);
 		}
-		
+		Color mc = new Color(Color.HSBtoRGB( hp/((maxHP>0?maxHP:1)+0.0f)/3f, 1, 1));
 		if(hp < maxHP) {
-			g.setColor(Color.GRAY);
+			g.setColor(new Color(76,76,76,150));//Color.GRAY);
 			g.fillRect(
 					(int)(x + xmap - (tileSize - 5) / 2 ),
 					(int)(y + ymap - height / 2) - 8,
 					tileSize - 5,
 					5
 			);
-			g.setColor(new Color(255,50,50));
-			g.fillRect(
-					(int)(x + xmap - (tileSize - 5) / 2 ),
-					(int)(y + ymap - height / 2) - 8,
-					hp*(tileSize - 5) / maxHP,
-					5
-			);
-			g.setColor(Color.DARK_GRAY);
+			g.setColor(new Color(25,25,25));//Color.GRAY);
 			g.drawRect(
 					(int)(x + xmap - (tileSize - 5) / 2 ),
 					(int)(y + ymap - height / 2) - 8,
 					tileSize - 5,
 					5
 			);
+			g.setColor(new Color(mc.getRed(), mc.getGreen(), mc.getBlue(), 150));//Color.GRAY);
+			g.fillRect(
+//					(int)(x + xmap - (tileSize - 5) / 2 ),
+//					(int)(y + ymap - height / 2) - 8,
+//					tileSize - 5,
+//					5
+					(int)(x + xmap - (tileSize - 5) / 2 ) + 1,
+					(int)(y + ymap - height / 2) - 7,
+					hp*(tileSize - 5) / maxHP,
+					3
+			);
+//			g.setColor(mc);//new Color(255,50,50));
+//			g.fillRect(
+//					(int)(x + xmap - (tileSize - 5) / 2 ),
+//					(int)(y + ymap - height / 2) - 8,
+//					hp*(tileSize - 5) / maxHP,
+//					5
+//			);
+			g.setColor(mc);//Color.DARK_GRAY);
+			g.drawRect(
+//					(int)(x + xmap - (tileSize - 5) / 2 ),
+//					(int)(y + ymap - height / 2) - 8,
+//					tileSize - 5,
+//					5
+					(int)(x + xmap - (tileSize - 5) / 2 ) + 1,
+					(int)(y + ymap - height / 2) - 7,
+					hp*(tileSize - 5) / maxHP,
+					3
+			);	
 		}
 	}
 }

@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.io.File;
 
 import Data.UserData;
 import Main.GamePanel;
@@ -26,8 +27,42 @@ public class GameStateManager {
 		
 		gameStates = new GameState[NUMGAMESTATES];
 		
-		currentState = UserData.isProgrammerDay() ? CSTATE : MENUSTATE;
-		loadState(currentState);
+		if(UserData.hasType("PLAY")) {
+			System.out.println("Loading game...");
+			if(UserData.hasValue("PLAY")) {
+				File file = new File(UserData.getValue("PLAY"));
+				if(file.isDirectory()) {
+					System.out.println("\nLoading from directory: ");
+					File[] files = file.listFiles();
+					for (File f : files) {
+						if(f.isFile()) {
+							if(f.getName().substring(f.getName().lastIndexOf("."),
+									f.getName().length()).equals(".map")) {
+								Level1State.youLevelURL = f + "";
+								System.out.println("> " + f.getName().substring(0,
+										f.getName().length()));
+							}else {
+								System.out.println("  " + f.getName().substring(0,
+										f.getName().length()));
+							}
+						}
+					}
+				}else {
+					Level1State.youLevelURL = file + "";
+				}
+				Level1State.loadYouLevel = true;
+				System.out.println("\nLoading game:  " + Level1State.youLevelURL);
+//				setState(GameStateManager.LEVEL1STATE);
+//			}else {
+			}
+			currentState = MENUSTATE;
+//			currentState = LEVEL1STATE;
+			loadState(currentState);
+			setState(LEVEL1STATE);
+		} else {
+			currentState = UserData.isProgrammerDay() ? CSTATE : MENUSTATE;
+			loadState(currentState);
+		}
 	}
 	
 	private void loadState(int state) {
